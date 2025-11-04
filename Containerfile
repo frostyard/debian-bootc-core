@@ -5,7 +5,7 @@ COPY build_files /
 # Base Debian Image
 FROM docker.io/library/debian:stable
 
-# COPY system_files /
+COPY system_files /
 
 ENV CARGO_HOME=/tmp/rust
 ENV RUSTUP_HOME=/tmp/rust
