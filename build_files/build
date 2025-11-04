@@ -2,67 +2,13 @@
 
 set -ouex pipefail
 
-DEV_DEPS="libzstd-dev libssl-dev pkg-config curl git build-essential meson \
-libfuse3-dev liblzma-dev e2fslibs-dev libext2fs-dev libgpgme-dev go-md2man \
-dracut autoconf automake libtool libglib2.0-dev bison flex jq equivs"
-
-export CARGO_HOME=/tmp/rust
-export RUSTUP_HOME=/tmp/rust
-export DRACUT_NO_XATTR=1
-
-# Remove unneeded apt repositories
+# Remove unneeded repositories and update
 rm -f /etc/apt/apt.conf.d/docker-gzip-indexes /etc/apt/apt.conf.d/docker-no-languages
-
-# Install needed dependencies for building bootc/ostree
 apt update -y
-apt install -y $DEV_DEPS
-
-# Set up rust build environment
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --profile minimal -y
-. "${RUSTUP_HOME}/env"
-
-# Build and install OSTree
-git clone https://github.com/ostreedev/ostree.git --depth 1 /tmp/ostree
-pushd /tmp/ostree
-git submodule update --init
-env NOCONFIGURE=1 ./autogen.sh
-./configure --prefix=/usr --libdir=/usr/lib --sysconfdir=/etc
-make -j"$(nproc)"
-make install
-popd
-ln -svf /usr/lib/libostree* /lib/$(arch)-linux-gnu/ || true
-ldconfig
-
-# Build and install Bootc
-git clone https://github.com/bootc-dev/bootc.git --depth 1 /tmp/bootc
-pushd /tmp/bootc
-export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/share/pkgconfig
-make bin install-all install-initramfs-dracut
-popd
-
-# Dummy libostree-1-1 package for dependant packages
-mkdir -p /tmp/equivs
-cat > /tmp/equivs/libostree-fix <<'EOF'
-Section: misc
-Priority: optional
-Standards-Version: 3.9.2
-
-Package: libostree-1-1
-Version: 2025.6
-Maintainer: Snow Linux <snow@snowlinux.org>
-Architecture: amd64
-Description: Dummy package to provide libostree-1-1
-EOF
-
-pushd /tmp/equivs
-equivs-build libostree-fix
-dpkg -i ./*.deb
-popd
-
-apt-mark hold libostree-1-1
 
 # Required packages
 apt install -y \
+  dracut \
   btrfs-progs \
   dosfstools \
   e2fsprogs \
@@ -75,15 +21,11 @@ apt install -y \
   systemd-boot-* \
   xfsprogs
 
-# Initramfs
+# Build Initramfs
 KERNEL_VERSION="$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")"
 dracut --force --no-hostonly --reproducible --zstd --verbose \
   --kver "$KERNEL_VERSION" "/usr/lib/modules/$KERNEL_VERSION/initramfs.img"
 cp "/boot/vmlinuz-$KERNEL_VERSION" "/usr/lib/modules/$KERNEL_VERSION/vmlinuz"
-
-# Remove no longer needed packages
-apt purge -y $DEV_DEPS
-apt autoremove -y --purge
 
 # Use proper home directory for new users
 sed -i 's|.*HOME=/home|HOME=/var/home|' "/etc/default/useradd"
