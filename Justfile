@@ -29,7 +29,7 @@ launch-incus:
     #!/usr/bin/env bash
     image_file=/tmp/snowbase.img
 
-    if [ -z "$image_file" ]; then
+    if [ ! -f "$image_file" ]; then
         echo "No image file found, generate-bootable-image first"
         exit 1
     fi
