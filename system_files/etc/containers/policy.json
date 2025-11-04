@@ -19,7 +19,7 @@
                 {
                     "type": "sigstoreSigned",
                     "keyPaths": [
-                        "/etc/pki/containers/snow-linux.pub",
+                        "/etc/pki/containers/snow-linux.pub"
                     ],
                     "signedIdentity": {
                         "type": "matchRepository"
