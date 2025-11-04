@@ -2,6 +2,10 @@
 
 set -ouex pipefail
 
+# FIXME: This entire script is far, far more complicated than it needs to be.
+# Replace me by deleting this entire thing and using upstream ostree/bootc packages
+# when they're ready.
+
 DEV_DEPS="libzstd-dev libssl-dev pkg-config curl git build-essential meson \
 libfuse3-dev liblzma-dev e2fslibs-dev libext2fs-dev libgpgme-dev go-md2man \
 autoconf automake libtool libglib2.0-dev bison flex equivs"
