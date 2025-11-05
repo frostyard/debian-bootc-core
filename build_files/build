@@ -9,19 +9,22 @@ apt update -y
 
 # Required packages
 apt install -y \
+  btrfs-progs \
+  ca-certificates \
   curl \
   dracut \
-  btrfs-progs \
   dosfstools \
   e2fsprogs \
   fdisk \
   firmware-linux-free \
+  iproute2 \
+  iputils-ping \
   linux-image-generic \
   skopeo \
   systemd \
-  systemd-boot \
   systemd-boot-* \
-  xfsprogs
+  xfsprogs \
+  zstd
 
 # Build Initramfs
 KERNEL_VERSION="$(basename "$(find /usr/lib/modules -maxdepth 1 -type d | grep -v -E "*.img" | tail -n 1)")"

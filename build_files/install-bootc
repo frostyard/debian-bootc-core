@@ -22,7 +22,7 @@ rm -f /etc/apt/apt.conf.d/docker-gzip-indexes /etc/apt/apt.conf.d/docker-no-lang
 apt update -y
 
 # Install needed dependencies for building bootc/ostree
-apt install -y $DEV_DEPS
+apt install -y $DEV_DEPS ca-certificates
 
 # Set up rust build environment
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --profile minimal -y
