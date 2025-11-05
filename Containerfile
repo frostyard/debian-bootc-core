@@ -7,8 +7,6 @@ FROM docker.io/library/debian:stable
 
 COPY system_files /
 
-ENV CARGO_HOME=/tmp/rust
-ENV RUSTUP_HOME=/tmp/rust
 ARG DEBIAN_FRONTEND=noninteractive
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
