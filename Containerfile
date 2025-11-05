@@ -20,7 +20,6 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
         /boot \
         /home \
         /root \
-        /usr/local \
         /srv && \
     mkdir -p /var && \
     mkdir -p /var/home && \
