@@ -8,6 +8,7 @@ apt update -y
 
 # Required packages
 apt install -y \
+  curl \
   dracut \
   btrfs-progs \
   dosfstools \
