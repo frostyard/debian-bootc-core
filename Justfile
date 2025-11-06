@@ -10,7 +10,7 @@ default:
     just --list --unsorted
 
 build-container $image_name=image_name:
-    sudo podman build --no-cache -t "{{ image_name }}:{{ image_tag }}" .
+    sudo podman build -t "{{ image_name }}:{{ image_tag }}" .
 
 run-container $image_name=image_name:
     sudo podman run --rm -it "{{ image_name }}:{{ image_tag }}" bash
