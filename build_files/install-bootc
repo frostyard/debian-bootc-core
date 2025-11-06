@@ -9,9 +9,9 @@ set -ouex pipefail
 echo "::group::Executing install-bootc"
 trap 'echo "::endgroup::"' EXIT
 
-DEV_DEPS="libzstd-dev libssl-dev pkg-config curl git build-essential meson \
-libfuse3-dev liblzma-dev e2fslibs-dev libext2fs-dev libgpgme-dev go-md2man \
-autoconf automake libtool libglib2.0-dev bison flex equivs"
+DEV_DEPS="libcurl4-openssl-dev libzstd-dev libssl-dev pkg-config curl git build-essential meson \
+libfuse3-dev liblzma-dev libarchive-dev libsoup2.4-dev e2fslibs-dev libext2fs-dev libgpgme-dev go-md2man \
+autoconf automake libtool libseccomp-dev libcap-dev libglib2.0-dev bison flex equivs gobject-introspection"
 
 export CARGO_HOME=/tmp/rust
 export RUSTUP_HOME=/tmp/rust
@@ -22,7 +22,7 @@ rm -f /etc/apt/apt.conf.d/docker-gzip-indexes /etc/apt/apt.conf.d/docker-no-lang
 apt update -y
 
 # Install needed dependencies for building bootc/ostree
-apt install -y $DEV_DEPS ca-certificates --no-install-recommends
+apt install -y $DEV_DEPS ca-certificates libarchive13 --no-install-recommends
 
 # Set up rust build environment
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --profile minimal -y
@@ -33,7 +33,7 @@ git clone https://github.com/ostreedev/ostree.git --depth 1 /tmp/ostree
 pushd /tmp/ostree
 git submodule update --init
 env NOCONFIGURE=1 ./autogen.sh
-./configure --prefix=/usr --libdir=/usr/lib --sysconfdir=/etc
+./configure --prefix=/usr --libdir=/usr/lib --sysconfdir=/etc --with-curl
 make -j"$(nproc)"
 make install
 popd
