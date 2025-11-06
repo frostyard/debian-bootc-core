@@ -1,4 +1,5 @@
 image_name := env("BUILD_IMAGE_NAME", "debian-bootc-core")
+image_repo := env("BUILD_IMAGE_REPO", "ghcr.io/linuxsnow")
 image_tag := env("BUILD_IMAGE_TAG", "latest")
 base_dir := env("BUILD_BASE_DIR", "/tmp")
 filesystem := env("BUILD_FILESYSTEM", "ext4")
@@ -30,7 +31,13 @@ generate-bootable-image $base_dir=base_dir $filesystem=filesystem:
     if [ ! -e "{{ base_dir }}/${image_filename}" ] ; then
         fallocate -l 20G "{{ base_dir }}/${image_filename}"
     fi
-    just bootc install to-disk --composefs-backend --via-loopback /data/${image_filename} --filesystem "{{ filesystem }}" --wipe --bootloader systemd
+    just bootc install to-disk \
+            --composefs-backend \
+            --via-loopback /data/${image_filename} \
+            --filesystem "{{ filesystem }}" \
+            --target-imgref {{ image_repo }}/{{ image_name }}:{{ image_tag }} \
+            --wipe \
+            --bootloader systemd
 
 launch-incus:
     #!/usr/bin/env bash
