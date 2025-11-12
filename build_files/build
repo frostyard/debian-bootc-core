@@ -2,6 +2,13 @@
 
 set -ouex pipefail
 
+# Move apt and dpkg folders
+# This is hardcoded in apt so a symlink is necessary
+mv /var/lib/apt /usr/share/apt
+mv /var/lib/dpkg /usr/share/dpkg
+ln -s /usr/share/apt /var/lib/apt
+ln -s /usr/share/dpkg /var/lib/dpkg
+
 # Remove unneeded repositories and update
 rm -f /etc/apt/apt.conf.d/docker-gzip-indexes /etc/apt/apt.conf.d/docker-no-languages
 rm -f /var/log/apt/eipp.log.xz
