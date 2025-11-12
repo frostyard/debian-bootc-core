@@ -26,5 +26,9 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     mkdir /srv && \
     ln -s sysroot/ostree ostree
 
+# DEBUGGING
+# RUN apt update -y && apt install -y whois
+# RUN usermod -p "$(echo "changeme" | mkpasswd -s)" root
+
 # Lint
 RUN bootc container lint

@@ -41,7 +41,7 @@ ln -svf /usr/lib/libostree* /lib/$(arch)-linux-gnu/ || true
 ldconfig
 
 # Build and install Bootc
-git clone https://github.com/frostyard/bootc.git --branch bootc-pr --depth 1 /tmp/bootc
+git clone https://github.com/frostyard/bootc.git --branch debugging --depth 1 /tmp/bootc
 pushd /tmp/bootc
 export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/share/pkgconfig
 make bin install-all install-initramfs-dracut

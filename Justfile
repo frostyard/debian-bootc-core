@@ -61,7 +61,7 @@ launch-incus:
     instance_name="{{ image_name }}"
     echo "Creating instance $instance_name from image file $abs_image_file"
     incus init "$instance_name" --empty --vm
-
+    incus config device override "$instance_name" root size=50GiB
     incus config set "$instance_name" limits.cpu=4 limits.memory=8GiB
     incus config set "$instance_name" security.secureboot=false
     incus config device add "$instance_name" vtpm tpm
