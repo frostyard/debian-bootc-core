@@ -33,7 +33,7 @@ git clone https://github.com/ostreedev/ostree.git --depth 1 /tmp/ostree
 pushd /tmp/ostree
 git submodule update --init
 env NOCONFIGURE=1 ./autogen.sh
-./configure --prefix=/usr --libdir=/usr/lib --sysconfdir=/etc --with-curl
+./configure --prefix=/usr --libdir=/usr/lib --sysconfdir=/etc --with-curl --with-dracut
 make -j"$(nproc)"
 make install
 popd
@@ -41,10 +41,10 @@ ln -svf /usr/lib/libostree* /lib/$(arch)-linux-gnu/ || true
 ldconfig
 
 # Build and install Bootc
-git clone https://github.com/frostyard/bootc.git --branch debugging --depth 1 /tmp/bootc
+git clone https://github.com/bootc-dev/bootc.git --depth 1 /tmp/bootc
 pushd /tmp/bootc
 export PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/share/pkgconfig
-make bin install-all install-initramfs-dracut
+make bin install-all
 popd
 
 # Build and install a dummy libostree-1-1 package for dependant packages
