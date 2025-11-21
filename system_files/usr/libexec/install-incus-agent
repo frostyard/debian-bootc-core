@@ -30,6 +30,10 @@ if [ $? -ne 0 ]; then
     echo "Failed to mount 9p share, incus-agent installation aborted."
     exit 1
 fi
+
+# Set up cleanup trap to ensure unmounting happens even on failure
+trap 'popd 2>/dev/null || true; umount "$MOUNT_POINT" 2>/dev/null || true; rmdir "$MOUNT_POINT" 2>/dev/null || true; echo "::endgroup::"' EXIT
+
 # cd into the mounted share
 pushd "$MOUNT_POINT"
 # run the install script
