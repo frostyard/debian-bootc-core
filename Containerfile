@@ -8,6 +8,8 @@ FROM docker.io/library/debian:stable
 COPY system_files /
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG BUILD_ID
+ENV BUILD_ID=${BUILD_ID}
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \

@@ -45,5 +45,8 @@ systemctl enable mnt.mount
 # Fix permissions on sudoers.d
 chmod 440 /etc/sudoers.d/001-bootc
 
+# Add build information to os-release
+echo "BUILD_ID=\"$BUILD_ID\"" >> /usr/lib/os-release
+
 # remove /etc/machine-id
 rm -f /etc/machine-id
