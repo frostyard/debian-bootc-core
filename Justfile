@@ -29,6 +29,19 @@ bootc *ARGS:
         -v "{{ base_dir }}:/data" \
         "{{ image_name }}:{{ image_tag }}" bootc {{ ARGS }}
 
+ghcrbootc *ARGS:
+    sudo podman run \
+        --rm --privileged --pid=host \
+        -it \
+        -v /etc/containers:/etc/containers{{ if selinux == 'true' { ':Z' } else { '' } }} \
+        -v /var/lib/containers:/var/lib/containers{{ if selinux == 'true' { ':Z' } else { '' } }} \
+        {{ if selinux == 'true' { '-v /sys/fs/selinux:/sys/fs/selinux' } else { '' } }} \
+        {{ if selinux == 'true' { '--security-opt label=type:unconfined_t' } else { '' } }} \
+        -v /dev:/dev \
+        -e RUST_LOG=debug \
+        -v "{{ base_dir }}:/data" \
+        "{{ image_repo}}/{{ image_name }}:{{ image_tag }}" bootc {{ ARGS }}
+
 # accelerate bootc image building with /tmp
 setup-bootc-accelerator:
     echo "BUILD_BASE_DIR=/tmp" > .env
@@ -46,6 +59,24 @@ generate-bootable-image $base_dir=base_dir $filesystem=filesystem:
             --target-imgref {{ image_repo }}/{{ image_name }}:{{ image_tag }} \
             --wipe \
             --bootloader systemd
+
+bootable-image-from-ghcr $base_dir=base_dir $filesystem=filesystem:
+    #!/usr/bin/env bash
+    image_filename={{ image_name }}.img
+    if [ ! -e "{{ base_dir }}/${image_filename}" ] ; then
+        fallocate -l 20G "{{ base_dir }}/${image_filename}"
+    fi
+    just ghcrbootc install to-disk \
+            --composefs-backend \
+            --via-loopback /data/${image_filename} \
+            --filesystem "{{ filesystem }}" \
+            --source-imgref docker://{{ image_repo }}/{{ image_name }}:{{ image_tag }} \
+            --target-imgref {{ image_repo }}/{{ image_name }}:{{ image_tag }} \
+            --wipe \
+            --bootloader systemd \
+            --karg "debug" \
+            --karg "systemd.log_level=debug" \
+            --karg "systemd.journald.forward_to_console=1"
 
 launch-incus:
     #!/usr/bin/env bash
